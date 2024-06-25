@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pokemon</title>
+   
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+   
+}
+
+#app {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+   
+}
+
+#pokemon-input {
+    padding: 10px;
+    width: 200px;
+    margin-right: 10px;
+}
+
+#search-button {
+    padding: 10px 20px;
+}
+
+#pokemon-info {
+    margin-top: 20px;
+}
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>pokemon</h1>
+        <input type="text" id="pokemon-input" placeholder="Enter Pokémon name or ID">
+        <button id="search-button">Search</button>
+        <div id="pokemon-info"></div>
+    </div>
+    <script>
+        document.getElementById('search-button').addEventListener('click', function() {
+    const pokemonInput = document.getElementById('pokemon-input').value.toLowerCase().trim();
+    const pokemonInfoDiv = document.getElementById('pokemon-info');
+
+    if (pokemonInput) {
+        fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonInput}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Pokémon not found');
+                }
+                return response.json();
+            })
+            .then(pokemon => {
+                pokemonInfoDiv.innerHTML = `
+                    <h2>${pokemon.name} (#${pokemon.id})</h2>
+                    <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}">
+                    <p>Height: ${pokemon.height / 10} m</p>
+                    <p>Weight: ${pokemon.weight / 10} kg</p>
+                    <p>Type: ${pokemon.types.map(typeInfo => typeInfo.type.name).join(', ')}</p>
+                `;
+            })
+            .catch(error => {
+                pokemonInfoDiv.innerHTML = `<p>${error.message}</p>`;
+            });
+    } else {
+        pokemonInfoDiv.innerHTML = `<p>Please enter a Pokémon name or ID.</p>`;
+    }
+});
+
+    </script>
+</body>
+</html>
